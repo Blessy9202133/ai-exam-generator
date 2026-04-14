@@ -63,14 +63,10 @@
         <!-- Completion View -->
         <section id="completion-section" class="glass-panel" style="display: none; text-align: center;">
             <div class="page-header">
-                <h1>🎉 Exam Submitted</h1>
-                <p>Your responses have been recorded successfully.</p>
+                <h1>🎉 Successfully Submitted</h1>
+                <p>Your responses have been recorded. You may now close this tab.</p>
             </div>
-            <div class="score-display"
-                style="font-size: 4rem; font-weight: bold; color: var(--success); margin: 2rem 0;">
-                <span id="final-score">--/--</span>
-            </div>
-            <a href="index.html" class="btn-secondary" style="max-width: 200px; margin: 0 auto;">Return to Dashboard</a>
+            <!-- Removed the Score display and Dashboard button so students can't access it! -->
         </section>
 
     </main>
@@ -204,8 +200,8 @@
             examSection.style.display = 'none';
             compSection.style.display = 'block';
 
-            // Show Score
-            document.getElementById('final-score').textContent = `${scorePercentage}%`;
+            // Show Score is removed based on your request!
+            // Just leaving "Successfully Submitted" message.
         });
     </script>
 </body>
