@@ -26,22 +26,60 @@
     <main class="container" style="max-width: 800px; margin-top: 2rem;">
 
         <!-- Registration Form (Before taking exam) -->
-        <section id="registration-section" class="glass-panel">
-            <div class="page-header" style="margin-bottom: 2rem;">
-                <h1>Welcome Student</h1>
-                <p>Please enter your details to begin the evaluation.</p>
+        <section id="registration-section">
+            <div class="glass-panel" style="margin-bottom: 1.5rem; border-left: 8px solid var(--accent);">
+                <div class="page-header" style="text-align: left; margin-bottom: 0;">
+                    <h1 id="reg-exam-title" style="font-size: 2.2rem; margin-bottom: 1rem;">Loading Exam Title...</h1>
+                    <div style="margin-bottom: 1rem; color: var(--text-dim); line-height: 1.6;">
+                        <p><strong>Time:</strong> <span id="reg-exam-time">30</span> Minutes</p>
+                        <p><strong>Total Marks:</strong> <span id="reg-exam-marks">100</span></p>
+                        <p><strong>Instructions:</strong></p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>All questions are compulsory.</li>
+                            <li>Please ensure all personal details are accurate.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <form id="start-exam-form">
-                <div class="form-group">
-                    <label for="student-name">Full Name</label>
-                    <input type="text" id="student-name" required placeholder="John Doe">
+                <div class="glass-panel" style="margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label for="student-email">Email <span style="color: var(--danger);">*</span></label>
+                        <input type="email" id="student-email" required placeholder="Valid email">
+                        <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem;">This form is collecting emails.</p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="student-email">Email Address</label>
-                    <input type="text" id="student-email" required placeholder="john@example.com">
+
+                <div class="glass-panel" style="margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label for="student-name">Full Name <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="student-name" required placeholder="Short answer text">
+                    </div>
                 </div>
-                <button type="submit" class="btn-primary" style="margin-top: 2rem;">Start Exam</button>
+
+                <div class="glass-panel" style="margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label for="student-phone">Phone Number <span style="color: var(--danger);">*</span></label>
+                        <input type="tel" id="student-phone" required placeholder="Short answer text">
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label for="student-emp-code">Employee Code <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="student-emp-code" required placeholder="Short answer text">
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label for="student-shed">Shed Name <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="student-shed" required placeholder="Short answer text">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 200px;">Start Exam</button>
             </form>
         </section>
 
@@ -115,17 +153,29 @@
         const compSection = document.getElementById('completion-section');
         const headerTitle = document.getElementById('header-exam-title');
 
+        // Initialize Page
+        headerTitle.textContent = examData.title;
+        document.getElementById('reg-exam-title').textContent = examData.title;
+        document.getElementById('reg-exam-marks').textContent = examData.questions.length * 10; // Assuming 10 marks per question
+
+        let registrationData = {};
         let timerInterval;
         let seconds = 0;
         let studentName = "Student";
 
-        // Initialize Page
-        headerTitle.textContent = examData.title;
-
         // Handle Registration
         document.getElementById('start-exam-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            studentName = document.getElementById('student-name').value;
+            
+            registrationData = {
+                name: document.getElementById('student-name').value,
+                email: document.getElementById('student-email').value,
+                phone: document.getElementById('student-phone').value,
+                empCode: document.getElementById('student-emp-code').value,
+                shedName: document.getElementById('student-shed').value
+            };
+
+            studentName = registrationData.name;
             
             regSection.style.display = 'none';
             examSection.style.display = 'block';
@@ -186,9 +236,13 @@
 
             // 🚀 Send actual result to Google Sheets
             const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwbm7hTa15Z6PT8HSMOKoUjiarsbvQwDcatGZuN8dZq2QiIUotilC40_1O8GLlGAj1Xfw/exec";
-            
+
             const submissionData = {
-                name: studentName,
+                name: registrationData.name,
+                email: registrationData.email,
+                phone: registrationData.phone,
+                empCode: registrationData.empCode,
+                shedName: registrationData.shedName,
                 exam: examData.title,
                 score: `${scorePercentage}%`,
                 status: scorePercentage >= 50 ? 'Pass' : 'Fail',
@@ -198,7 +252,7 @@
             if (GOOGLE_SHEET_URL.startsWith('http')) {
                 fetch(GOOGLE_SHEET_URL, {
                     method: 'POST',
-                    body: JSON.stringify(submissionData) 
+                    body: JSON.stringify(submissionData)
                     // No headers sent to avoid tricky CORS preflight blocking
                 }).catch(err => console.error("Could not reach Google Sheets", err));
             } else {
