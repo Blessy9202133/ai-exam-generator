@@ -111,19 +111,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-link-btn');
     const shareLink = document.getElementById('share-link');
 
-    publishBtn.addEventListener('click', () => {
-        // Here you would save currentGeneratedExam to Firebase
-        // and get back a unique ID
+    publishBtn.addEventListener('click', async () => {
+        // Generate a random ID for local reference
         const fakeId = Math.random().toString(36).substring(7);
         localStorage.setItem(`exam_${fakeId}`, JSON.stringify(currentGeneratedExam));
 
-        // Encode the exam data for the sharing link so it works for other users
+        // 1. Create the full long URL
         const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(currentGeneratedExam))));
-        shareLink.value = `${window.location.origin}/ai-exam-generator/exam.html?id=${fakeId}&data=${encodedData}`;
+        const longUrl = `${window.location.origin}/ai-exam-generator/exam.html?id=${fakeId}&data=${encodedData}`;
 
+        // 2. Show loading state in the link box
+        shareLink.value = "Shortening link... Please wait.";
         modal.classList.add('active');
 
-        // Show demo results after publishing just to demonstrate capability
+        // 3. Attempt to shorten the link via is.gd API
+        try {
+            // We use a proxy-like approach or direct fetch if CORS allows. 
+            // is.gd is usually friendly.
+            const response = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`);
+            const data = await response.json();
+            
+            if (data.shorturl) {
+                shareLink.value = data.shorturl;
+            } else {
+                shareLink.value = longUrl; // Fallback
+            }
+        } catch (error) {
+            console.warn("Shortener failed, using long link:", error);
+            shareLink.value = longUrl; // Fallback
+        }
+
+        // Show demo results after publishing
         showMockResults();
     });
 
