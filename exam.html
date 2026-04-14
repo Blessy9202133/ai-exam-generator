@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Exam | Participant View</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2" style="background: radial-gradient(circle, var(--success) 0%, transparent 70%);"></div>
+    </div>
+
+    <!-- Student Navigation -->
+    <nav class="navbar" style="justify-content: center;">
+        <div class="logo">
+            <span class="logo-icon">📝</span>
+            <span id="header-exam-title">Loading Exam...</span>
+        </div>
+    </nav>
+
+    <main class="container" style="max-width: 800px; margin-top: 2rem;">
+
+        <!-- Registration Form (Before taking exam) -->
+        <section id="registration-section" class="glass-panel">
+            <div class="page-header" style="margin-bottom: 2rem;">
+                <h1>Welcome Student</h1>
+                <p>Please enter your details to begin the evaluation.</p>
+            </div>
+
+            <form id="start-exam-form">
+                <div class="form-group">
+                    <label for="student-name">Full Name</label>
+                    <input type="text" id="student-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="student-email">Email Address</label>
+                    <input type="text" id="student-email" required placeholder="john@example.com">
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top: 2rem;">Start Exam</button>
+            </form>
+        </section>
+
+        <!-- Exam Form (Hidden initially) -->
+        <section id="exam-section" class="glass-panel" style="display: none;">
+            <div class="timer-bar"
+                style="text-align: right; margin-bottom: 1rem; color: var(--accent); font-weight: bold;">
+                Time Elapsed: <span id="timer">00:00</span>
+            </div>
+
+            <form id="submission-form">
+                <div id="questions-container">
+                    <!-- Populated by JS -->
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top: 2rem;">Submit Answers</button>
+            </form>
+        </section>
+
+        <!-- Completion View -->
+        <section id="completion-section" class="glass-panel" style="display: none; text-align: center;">
+            <div class="page-header">
+                <h1>🎉 Exam Submitted</h1>
+                <p>Your responses have been recorded successfully.</p>
+            </div>
+            <div class="score-display"
+                style="font-size: 4rem; font-weight: bold; color: var(--success); margin: 2rem 0;">
+                <span id="final-score">--/--</span>
+            </div>
+            <a href="index.html" class="btn-secondary" style="max-width: 200px; margin: 0 auto;">Return to Dashboard</a>
+        </section>
+
+    </main>
+
+    <script>
+        // Extract Exam ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const examId = urlParams.get('id');
+
+        let examData = null;
+
+        if (examId) {
+            const savedData = localStorage.getItem(`exam_${examId}`);
+            if (savedData) {
+                examData = JSON.parse(savedData);
+            }
+        }
+
+        if (!examData) {
+            // Fallback if not found
+            examData = {
+                title: "Mock AI Physics Exam",
+                questions: [
+                    {
+                        qText: "What is the primary function of Gravity?",
+                        options: ["To push things up", "To pull things toward a mass", "To create light", "To generate heat"],
+                        correctAnswer: 1
+                    }
+                ]
+            };
+        }
+
+        const regSection = document.getElementById('registration-section');
+        const examSection = document.getElementById('exam-section');
+        const compSection = document.getElementById('completion-section');
+        const headerTitle = document.getElementById('header-exam-title');
+
+        let timerInterval;
+        let seconds = 0;
+        let studentName = "Student";
+
+        // Initialize Page
+        headerTitle.textContent = examData.title;
+
+        // Handle Registration
+        document.getElementById('start-exam-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            studentName = document.getElementById('student-name').value;
+            
+            regSection.style.display = 'none';
+            examSection.style.display = 'block';
+
+            renderQuestions();
+
+            // Start Timer
+            timerInterval = setInterval(() => {
+                seconds++;
+                const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+                const s = String(seconds % 60).padStart(2, '0');
+                document.getElementById('timer').textContent = `${m}:${s}`;
+            }, 1000);
+        });
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            examData.questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.classList.add('question-card');
+                qDiv.style.marginBottom = '2rem';
+
+                let optsHtml = '';
+                q.options.forEach((opt, oIndex) => {
+                    optsHtml += `
+                        <div class="option" style="cursor: pointer;" onclick="document.getElementById('q${index}_o${oIndex}').click()">
+                            <input type="radio" name="q${index}" id="q${index}_o${oIndex}" value="${oIndex}" required>
+                            <label style="margin:0; cursor: pointer;">${opt}</label>
+                        </div>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <h3 style="margin-bottom: 1rem;">${index + 1}. ${q.qText}</h3>
+                    <div class="optionsbox">
+                        ${optsHtml}
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        // Handle Submission
+        document.getElementById('submission-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            clearInterval(timerInterval);
+
+            // Calculate Score
+            let correctCount = 0;
+            examData.questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected && parseInt(selected.value) === q.correctAnswer) {
+                    correctCount++;
+                }
+            });
+
+            const scorePercentage = Math.round((correctCount / examData.questions.length) * 100);
+
+            // 🚀 Send actual result to Google Sheets
+            const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwbm7hTa15Z6PT8HSMOKoUjiarsbvQwDcatGZuN8dZq2QiIUotilC40_1O8GLlGAj1Xfw/exec";
+            
+            const submissionData = {
+                name: studentName,
+                exam: examData.title,
+                score: `${scorePercentage}%`,
+                status: scorePercentage >= 50 ? 'Pass' : 'Fail',
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            if (GOOGLE_SHEET_URL.startsWith('http')) {
+                fetch(GOOGLE_SHEET_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(submissionData) 
+                    // No headers sent to avoid tricky CORS preflight blocking
+                }).catch(err => console.error("Could not reach Google Sheets", err));
+            } else {
+                // Fallback to local storage if URL isn't set up yet
+                let results = JSON.parse(localStorage.getItem('mock_results') || '[]');
+                results.unshift(submissionData);
+                localStorage.setItem('mock_results', JSON.stringify(results));
+            }
+
+            examSection.style.display = 'none';
+            compSection.style.display = 'block';
+
+            // Show Score
+            document.getElementById('final-score').textContent = `${scorePercentage}%`;
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Exam Generator | Admin</title>
+    <!-- Modern Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- PDF.js for parsing PDF files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <!-- Firebase SDKs -->
+    <script src="main.js" defer></script>
+</head>
+
+<body>
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-icon">⚡</span>
+            <span>Gen<span class="highlight">Exam</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active">Dashboard</a>
+            <a href="#">Results</a>
+            <button class="btn-primary-sm">Create Exam</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Dashboard Header -->
+        <header class="page-header">
+            <h1>Create a New Exam</h1>
+            <p>Upload your course material (PDF) and let AI generate the perfect exam.</p>
+        </header>
+
+        <div class="grid-content">
+            <!-- Left Column: Form -->
+            <section class="glass-panel">
+                <form id="generator-form">
+                    <div class="form-group">
+                        <label for="exam-title">Exam Title</label>
+                        <input type="text" id="exam-title" placeholder="e.g. Midterm Physics Evaluation" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Source Material (PDF/Word text)</label>
+                        <div class="file-drop-zone" id="drop-zone">
+                            <div class="upload-icon">📄</div>
+                            <p>Drag & drop your file here or <span>browse</span></p>
+                            <input type="file" id="file-upload" accept=".pdf,.doc,.docx,.txt" hidden>
+                        </div>
+                        <div id="file-name-display" class="file-name-display"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="question-count">Number of Questions</label>
+                            <input type="number" id="question-count" min="1" max="50" value="10" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="difficulty">Difficulty Level</label>
+                            <select id="difficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="generate-btn">
+                        <span class="btn-text">Generate Exam</span>
+                        <span class="loader" style="display: none;"></span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Right Column: Preview -->
+            <section class="glass-panel preview-panel">
+                <div class="preview-header">
+                    <h2>Exam Preview</h2>
+                    <span class="badge">Draft</span>
+                </div>
+
+                <div id="preview-content" class="preview-empty">
+                    <div class="empty-state">
+                        <span class="ghost-icon">🔮</span>
+                        <p>Fill out the form and click generate to see AI magic here.</p>
+                    </div>
+                </div>
+
+                <div class="preview-actions" style="display: none;" id="preview-actions">
+                    <button class="btn-secondary" id="regenerate-btn">Regenerate</button>
+                    <button class="btn-primary" id="publish-btn">Publish to Students</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Results Section -->
+        <section id="results-section" class="glass-panel results-panel" style="margin-top: 2rem;">
+            <h2>Recent Exam Results</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Exam Taken</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Publish Modal -->
+        <div id="publish-modal" class="modal">
+            <div class="modal-content glass-panel">
+                <span class="close-btn">&times;</span>
+                <h2>Exam Published! 🎉</h2>
+                <p>Share this link with your students. All their answers will be securely directed to your Results
+                    board.</p>
+                <div class="share-link-box">
+                    <input type="text" id="share-link" readonly value="https://your-domain.com/exam.html?id=12345">
+                    <button id="copy-link-btn" class="btn-primary-sm">Copy</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
