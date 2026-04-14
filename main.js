@@ -117,7 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const fakeId = Math.random().toString(36).substring(7);
         localStorage.setItem(`exam_${fakeId}`, JSON.stringify(currentGeneratedExam));
 
-        shareLink.value = `${window.location.origin}/ai-exam-generator/exam.html?id=${fakeId}`;
+        // Encode the exam data for the sharing link so it works for other users
+        const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(currentGeneratedExam))));
+        shareLink.value = `${window.location.origin}/ai-exam-generator/exam.html?id=${fakeId}&data=${encodedData}`;
+
         modal.classList.add('active');
 
         // Show demo results after publishing just to demonstrate capability

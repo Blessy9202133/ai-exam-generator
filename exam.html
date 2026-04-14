@@ -72,13 +72,24 @@
     </main>
 
     <script>
-        // Extract Exam ID from URL
+        // Extract Exam ID and Data from URL
         const urlParams = new URLSearchParams(window.location.search);
         const examId = urlParams.get('id');
+        const encodedData = urlParams.get('data');
 
         let examData = null;
 
-        if (examId) {
+        if (encodedData) {
+            try {
+                // Decode from URL
+                examData = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+            } catch (e) {
+                console.error("Failed to decode exam data from URL", e);
+            }
+        }
+
+        if (!examData && examId) {
+            // Fallback to local storage if no URL data
             const savedData = localStorage.getItem(`exam_${examId}`);
             if (savedData) {
                 examData = JSON.parse(savedData);
