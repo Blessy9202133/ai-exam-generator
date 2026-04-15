@@ -129,15 +129,25 @@ document.addEventListener("DOMContentLoaded", () => {
     shareLink.value = "Shortening link... Please wait.";
     modal.classList.add("active");
 
-    // 3. Attempt to shorten the link via TinyURL API
+    // 3. Attempt to shorten the link via rebrand.ly API
     try {
-      const response = await fetch(
-        `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`,
-      );
-      const shortUrl = await response.text();
+      const response = await fetch(`https://rebrand.ly/api/v1/links`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: longUrl,
+          domain: "rebrand.ly",
+        }),
+      });
 
-      if (shortUrl && shortUrl.startsWith("http")) {
-        shareLink.value = shortUrl;
+      const data = await response.json();
+
+      if (data.shortUrl) {
+        shareLink.value = data.shortUrl;
+      } else if (data.shortlink) {
+        shareLink.value = data.shortlink;
       } else {
         shareLink.value = longUrl; // Fallback
       }
@@ -211,6 +221,28 @@ async function showMockResults() {
     try {
       const res = await fetch(GOOGLE_SHEET_URL);
       results = await res.json();
+
+      // Debug: Log what we're getting from the sheet
+      console.log("Raw data from Google Sheet:", results);
+
+      // Map the data to match expected field names (case-insensitive and flexible)
+      results = results.map((r) => ({
+        name: r.name || r.Name || "",
+        email: r.email || r.Email || "",
+        phone: r.phone || r.Phone || "",
+        empCode: r.empCode || r["Emp Code"] || r["emp code"] || r.empCode || "",
+        shedName:
+          r.shedName || r["Shed Name"] || r["shed name"] || r.shedName || "",
+        exam: r.exam || r.Exam || "",
+        score: r.score || r.Score || r.marks || r.Marks || "—",
+        status: r.status || r.Status || "",
+        date: r.date || r.Date || "",
+        questionsAttempted:
+          r.questionsAttempted || r["Questions Attempted"] || r.attempted || "",
+        totalQuestions:
+          r.totalQuestions || r["Total Questions"] || r.total || "",
+      }));
+
       document.querySelector("#results-section h2").innerHTML =
         "Live Sheet Results <span style='font-size:12px; color:var(--success)'>🟢 Connected to Google</span>";
     } catch (e) {
