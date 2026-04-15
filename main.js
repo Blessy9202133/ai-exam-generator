@@ -220,15 +220,36 @@ async function showMockResults() {
         ];
     }
 
-    tbody.innerHTML = results.map(r => `
+    tbody.innerHTML = results.map((r, i) => {
+        // Format score — old data has decimal (0.5), new data has "50%"
+        let marks = r.score || r.marks || '—';
+        if (typeof marks === 'number') {
+            marks = Math.round(marks * 100) + '%';
+        }
+
+        // Format date — strip time portion if it's ISO format
+        let dateStr = r.date || '—';
+        if (dateStr.includes('T')) {
+            dateStr = dateStr.split('T')[0];
+        }
+
+        return `
         <tr>
-            <td>${r.name}</td>
-            <td>${r.exam}</td>
-            <td>${r.score}</td>
-            <td class="${r.status === 'Pass' ? 'status-pass' : 'status-fail'}">${r.status}</td>
-            <td>${r.date}</td>
+            <td style="color: var(--text-muted); font-weight: 600;">${i + 1}</td>
+            <td><strong>${r.name || '—'}</strong></td>
+            <td style="color: var(--text-muted); font-size: 0.85rem;">${r.email || '—'}</td>
+            <td>${r.phone || '—'}</td>
+            <td><span style="font-family: monospace; background: rgba(255,255,255,0.07); padding: 2px 8px; border-radius: 6px;">${r.empCode || '—'}</span></td>
+            <td>${r.shedName || '—'}</td>
+            <td>${r.exam || '—'}</td>
+            <td><strong>${marks}</strong></td>
+            <td>${r.questionsAttempted ?? '—'}</td>
+            <td>${r.totalQuestions ?? '—'}</td>
+            <td class="${r.status === 'Pass' ? 'status-pass' : 'status-fail'}">${r.status || '—'}</td>
+            <td style="color: var(--text-muted);">${dateStr}</td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function generateMockData(title, count, diff) {

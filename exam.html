@@ -5,112 +5,538 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Exam | Participant View</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── GOOGLE FORMS THEME ─────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #ede7f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Top bar — Google Forms purple */
+        .gf-topbar {
+            width: 100%;
+            background: #673ab7;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        }
+
+        .gf-topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gf-topbar-logo span.icon {
+            font-size: 1.45rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff3;
+            border-radius: 6px;
+            width: 34px;
+            height: 34px;
+        }
+
+        .gf-topbar-title {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 400px;
+        }
+
+        /* Page wrapper */
+        .gf-page {
+            width: 100%;
+            max-width: 680px;
+            padding: 32px 16px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Base card */
+        .gf-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,.14),
+                        0 1px 1px 0 rgba(0,0,0,.10),
+                        0 1px 3px 0 rgba(0,0,0,.12);
+            overflow: hidden;
+        }
+
+        /* Header card */
+        .gf-header-card {
+            border-top: 10px solid #673ab7;
+            padding: 24px 24px 20px;
+        }
+
+        .gf-header-card h1 {
+            font-family: 'Roboto', sans-serif;
+            font-size: 2rem;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 8px;
+            line-height: 1.25;
+        }
+
+        .gf-header-desc {
+            color: #444746;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .gf-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .gf-meta-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0ebff;
+            color: #5724c8;
+            border-radius: 100px;
+            padding: 4px 12px;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .gf-required-notice {
+            margin-top: 14px;
+            font-size: 0.82rem;
+            color: #70757a;
+        }
+
+        .gf-required-notice span {
+            color: #d93025;
+            font-weight: 600;
+        }
+
+        /* Email collecting notice */
+        .gf-email-notice {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        .gf-email-notice .notice-icon { font-size: 1rem; }
+
+        /* Field card */
+        .gf-field-card {
+            padding: 20px 24px 24px;
+            transition: box-shadow 0.2s;
+        }
+
+        .gf-field-card:focus-within {
+            box-shadow: 0 0 0 2px #673ab7,
+                        0 2px 1px -1px rgba(0,0,0,.14);
+        }
+
+        .gf-field-card .gf-label {
+            font-size: 0.95rem;
+            color: #202124;
+            margin-bottom: 14px;
+            display: block;
+            line-height: 1.4;
+        }
+
+        .gf-label .required-star {
+            color: #d93025;
+            margin-left: 4px;
+        }
+
+        /* Material underline input */
+        .gf-input-wrap {
+            position: relative;
+        }
+
+        .gf-input-wrap input {
+            width: 100%;
+            padding: 8px 0 6px;
+            font-size: 0.95rem;
+            font-family: 'Roboto', sans-serif;
+            color: #202124;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #80868b;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .gf-input-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #673ab7;
+            transition: width 0.25s ease;
+        }
+
+        .gf-input-wrap:focus-within::after { width: 100%; }
+        .gf-input-wrap:focus-within input { border-color: #673ab7; }
+
+        .gf-input-wrap input::placeholder { color: transparent; }
+        .gf-input-wrap input:not(:placeholder-shown) + .gf-float-label,
+        .gf-input-wrap input:focus + .gf-float-label { display: none; }
+
+        .gf-hint {
+            font-size: 0.77rem;
+            color: #70757a;
+            margin-top: 6px;
+            display: block;
+        }
+
+        /* Options (Radio) */
+        .gf-options { display: flex; flex-direction: column; gap: 4px; }
+
+        .gf-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .gf-option:hover { background: #f6f0ff; }
+
+        .gf-option input[type="radio"] {
+            accent-color: #673ab7;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .gf-option label {
+            font-size: 0.95rem;
+            color: #202124;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Submit section */
+        .gf-submit-card {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .gf-btn-submit {
+            background: #673ab7;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 28px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(103,58,183,0.35);
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+        }
+
+        .gf-btn-submit:hover {
+            background: #5e35b1;
+            box-shadow: 0 4px 12px rgba(103,58,183,0.4);
+            transform: translateY(-1px);
+        }
+
+        .gf-btn-submit:active { transform: scale(0.98); }
+
+        .gf-clear-link {
+            font-size: 0.85rem;
+            color: #673ab7;
+            text-decoration: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: 'Roboto', sans-serif;
+            letter-spacing: 0.02em;
+        }
+
+        .gf-clear-link:hover { text-decoration: underline; }
+
+        /* Timer bar */
+        .gf-timer-card {
+            padding: 12px 24px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            border-top: 10px solid #673ab7;
+            font-size: 0.9rem;
+            color: #5e35b1;
+            font-weight: 500;
+        }
+
+        .gf-timer-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #673ab7;
+            background: #f0ebff;
+            padding: 2px 12px;
+            border-radius: 100px;
+        }
+
+        /* Exam submit button */
+        .gf-btn-exam-submit {
+            background: #673ab7;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 36px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            margin-top: 8px;
+            width: 100%;
+            box-shadow: 0 1px 3px rgba(103,58,183,0.35);
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+        }
+
+        .gf-btn-exam-submit:hover {
+            background: #5e35b1;
+            box-shadow: 0 4px 12px rgba(103,58,183,0.4);
+        }
+
+        /* Question card in exam section */
+        .gf-question-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,.14),
+                        0 1px 1px 0 rgba(0,0,0,.10),
+                        0 1px 3px 0 rgba(0,0,0,.12);
+            margin-bottom: 12px;
+        }
+
+        .gf-question-card h3 {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        /* Completion Card */
+        .gf-completion-card {
+            border-top: 10px solid #34a853;
+            padding: 48px 24px;
+            text-align: center;
+        }
+
+        .gf-completion-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .gf-completion-card h1 {
+            font-size: 1.7rem;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 10px;
+        }
+
+        .gf-completion-card p {
+            color: #5f6368;
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        .gf-footer {
+            text-align: center;
+            color: #70757a;
+            font-size: 0.75rem;
+            padding: 16px 0 0;
+        }
+
+        .gf-footer strong { color: #673ab7; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .gf-topbar-title { max-width: 200px; }
+            .gf-page { padding: 16px 8px 60px; }
+            .gf-header-card h1 { font-size: 1.5rem; }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="background-elements">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2" style="background: radial-gradient(circle, var(--success) 0%, transparent 70%);"></div>
+
+    <!-- Top Bar -->
+    <header class="gf-topbar">
+        <div class="gf-topbar-logo">
+            <span class="icon">📝</span>
+            <span class="gf-topbar-title" id="header-exam-title">Loading Exam...</span>
+        </div>
+    </header>
+
+    <!-- ===================== REGISTRATION SECTION ===================== -->
+    <div class="gf-page" id="registration-section">
+
+        <!-- Header Card -->
+        <div class="gf-card gf-header-card">
+            <h1 id="reg-exam-title">Loading Exam...</h1>
+            <p class="gf-header-desc">
+                This is an online assessment. Please fill in all your details accurately before starting.
+            </p>
+            <div class="gf-meta-row">
+                <span class="gf-meta-chip">⏱️ <span id="reg-exam-time">30</span>&nbsp;Minutes</span>
+                <span class="gf-meta-chip">🏆 Total Marks: <span id="reg-exam-marks">100</span></span>
+                <span class="gf-meta-chip">📋 All questions compulsory</span>
+            </div>
+            <p class="gf-required-notice"><span>*</span> Indicates required question</p>
+        </div>
+
+        <!-- Email Collecting Notice -->
+        <div class="gf-email-notice">
+            <span class="notice-icon">📧</span>
+            This form is collecting email addresses. Make sure you are submitting accurate information.
+        </div>
+
+        <!-- Form -->
+        <form id="start-exam-form" style="display:contents;">
+
+            <!-- Email -->
+            <div class="gf-card gf-field-card">
+                <label class="gf-label" for="student-email">
+                    Email Address <span class="required-star">*</span>
+                </label>
+                <div class="gf-input-wrap">
+                    <input type="email" id="student-email" required placeholder=" " autocomplete="email">
+                </div>
+                <span class="gf-hint">Enter your official company email address.</span>
+            </div>
+
+            <!-- Full Name -->
+            <div class="gf-card gf-field-card">
+                <label class="gf-label" for="student-name">
+                    Full Name <span class="required-star">*</span>
+                </label>
+                <div class="gf-input-wrap">
+                    <input type="text" id="student-name" required placeholder=" " autocomplete="name">
+                </div>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="gf-card gf-field-card">
+                <label class="gf-label" for="student-phone">
+                    Phone Number <span class="required-star">*</span>
+                </label>
+                <div class="gf-input-wrap">
+                    <input type="tel" id="student-phone" required placeholder=" " autocomplete="tel">
+                </div>
+            </div>
+
+            <!-- Employee Code -->
+            <div class="gf-card gf-field-card">
+                <label class="gf-label" for="student-emp-code">
+                    Employee Code <span class="required-star">*</span>
+                </label>
+                <div class="gf-input-wrap">
+                    <input type="text" id="student-emp-code" required placeholder=" ">
+                </div>
+            </div>
+
+            <!-- Shed Name -->
+            <div class="gf-card gf-field-card">
+                <label class="gf-label" for="student-shed">
+                    Shed Name <span class="required-star">*</span>
+                </label>
+                <div class="gf-input-wrap">
+                    <input type="text" id="student-shed" required placeholder=" ">
+                </div>
+            </div>
+
+            <!-- Submit Row -->
+            <div class="gf-card gf-submit-card">
+                <button type="submit" class="gf-btn-submit">Submit &amp; Start Exam</button>
+                <button type="reset" class="gf-clear-link">Clear form</button>
+            </div>
+
+        </form>
+
+        <div class="gf-footer">Powered by <strong>GenExam AI</strong> &nbsp;|&nbsp; Never submit passwords through this form.</div>
+
+    </div><!-- /registration-section -->
+
+
+    <!-- ===================== EXAM SECTION ===================== -->
+    <div class="gf-page" id="exam-section" style="display:none;">
+
+        <!-- Timer Card -->
+        <div class="gf-card gf-timer-card">
+            ⏱️ Time Elapsed:
+            <span class="gf-timer-value" id="timer">00:00</span>
+        </div>
+
+        <form id="submission-form" style="display:contents;">
+
+            <div id="questions-container">
+                <!-- Populated by JS -->
+            </div>
+
+            <div class="gf-card gf-submit-card">
+                <button type="submit" class="gf-btn-exam-submit">Submit Answers</button>
+            </div>
+
+        </form>
+
+    </div><!-- /exam-section -->
+
+
+    <!-- ===================== COMPLETION SECTION ===================== -->
+    <div class="gf-page" id="completion-section" style="display:none;">
+        <div class="gf-card gf-completion-card">
+            <span class="gf-completion-icon">✅</span>
+            <h1>Your response has been recorded.</h1>
+            <p>Thank you for submitting the exam. You may now close this tab.</p>
+        </div>
+        <div class="gf-footer">Powered by <strong>GenExam AI</strong></div>
     </div>
 
-    <!-- Student Navigation -->
-    <nav class="navbar" style="justify-content: center;">
-        <div class="logo">
-            <span class="logo-icon">📝</span>
-            <span id="header-exam-title">Loading Exam...</span>
-        </div>
-    </nav>
-
-    <main class="container" style="max-width: 800px; margin-top: 2rem;">
-
-        <!-- Registration Form (Before taking exam) -->
-        <section id="registration-section">
-            <div class="glass-panel" style="margin-bottom: 1.5rem; border-left: 8px solid var(--accent);">
-                <div class="page-header" style="text-align: left; margin-bottom: 0;">
-                    <h1 id="reg-exam-title" style="font-size: 2.2rem; margin-bottom: 1rem;">Loading Exam Title...</h1>
-                    <div style="margin-bottom: 1rem; color: var(--text-dim); line-height: 1.6;">
-                        <p><strong>Time:</strong> <span id="reg-exam-time">30</span> Minutes</p>
-                        <p><strong>Total Marks:</strong> <span id="reg-exam-marks">100</span></p>
-                        <p><strong>Instructions:</strong></p>
-                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                            <li>All questions are compulsory.</li>
-                            <li>Please ensure all personal details are accurate.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <form id="start-exam-form">
-                <div class="glass-panel" style="margin-bottom: 1rem;">
-                    <div class="form-group">
-                        <label for="student-email">Email <span style="color: var(--danger);">*</span></label>
-                        <input type="email" id="student-email" required placeholder="Valid email">
-                        <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem;">This form is collecting emails.</p>
-                    </div>
-                </div>
-
-                <div class="glass-panel" style="margin-bottom: 1rem;">
-                    <div class="form-group">
-                        <label for="student-name">Full Name <span style="color: var(--danger);">*</span></label>
-                        <input type="text" id="student-name" required placeholder="Short answer text">
-                    </div>
-                </div>
-
-                <div class="glass-panel" style="margin-bottom: 1rem;">
-                    <div class="form-group">
-                        <label for="student-phone">Phone Number <span style="color: var(--danger);">*</span></label>
-                        <input type="tel" id="student-phone" required placeholder="Short answer text">
-                    </div>
-                </div>
-
-                <div class="glass-panel" style="margin-bottom: 1rem;">
-                    <div class="form-group">
-                        <label for="student-emp-code">Employee Code <span style="color: var(--danger);">*</span></label>
-                        <input type="text" id="student-emp-code" required placeholder="Short answer text">
-                    </div>
-                </div>
-
-                <div class="glass-panel" style="margin-bottom: 1.5rem;">
-                    <div class="form-group">
-                        <label for="student-shed">Shed Name <span style="color: var(--danger);">*</span></label>
-                        <input type="text" id="student-shed" required placeholder="Short answer text">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary" style="width: 200px;">Start Exam</button>
-            </form>
-        </section>
-
-        <!-- Exam Form (Hidden initially) -->
-        <section id="exam-section" class="glass-panel" style="display: none;">
-            <div class="timer-bar"
-                style="text-align: right; margin-bottom: 1rem; color: var(--accent); font-weight: bold;">
-                Time Elapsed: <span id="timer">00:00</span>
-            </div>
-
-            <form id="submission-form">
-                <div id="questions-container">
-                    <!-- Populated by JS -->
-                </div>
-                <button type="submit" class="btn-primary" style="margin-top: 2rem;">Submit Answers</button>
-            </form>
-        </section>
-
-        <!-- Completion View -->
-        <section id="completion-section" class="glass-panel" style="display: none; text-align: center;">
-            <div class="page-header">
-                <h1>🎉 Successfully Submitted</h1>
-                <p>Your responses have been recorded. You may now close this tab.</p>
-            </div>
-            <!-- Removed the Score display and Dashboard button so students can't access it! -->
-        </section>
-
-    </main>
 
     <script>
-        // Extract Exam ID and Data from URL
+        // ── Extract Exam ID and Data from URL ──────────────────────────
         const urlParams = new URLSearchParams(window.location.search);
         const examId = urlParams.get('id');
         const encodedData = urlParams.get('data');
@@ -119,7 +545,6 @@
 
         if (encodedData) {
             try {
-                // Decode from URL
                 examData = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
             } catch (e) {
                 console.error("Failed to decode exam data from URL", e);
@@ -127,15 +552,11 @@
         }
 
         if (!examData && examId) {
-            // Fallback to local storage if no URL data
             const savedData = localStorage.getItem(`exam_${examId}`);
-            if (savedData) {
-                examData = JSON.parse(savedData);
-            }
+            if (savedData) examData = JSON.parse(savedData);
         }
 
         if (!examData) {
-            // Fallback if not found
             examData = {
                 title: "Mock AI Physics Exam",
                 questions: [
@@ -148,41 +569,37 @@
             };
         }
 
-        const regSection = document.getElementById('registration-section');
-        const examSection = document.getElementById('exam-section');
-        const compSection = document.getElementById('completion-section');
-        const headerTitle = document.getElementById('header-exam-title');
+        // ── Sections ───────────────────────────────────────────────────
+        const regSection    = document.getElementById('registration-section');
+        const examSection   = document.getElementById('exam-section');
+        const compSection   = document.getElementById('completion-section');
 
-        // Initialize Page
-        headerTitle.textContent = examData.title;
-        document.getElementById('reg-exam-title').textContent = examData.title;
-        document.getElementById('reg-exam-marks').textContent = examData.questions.length * 10; // Assuming 10 marks per question
+        // ── Populate header info ───────────────────────────────────────
+        document.getElementById('header-exam-title').textContent = examData.title;
+        document.getElementById('reg-exam-title').textContent    = examData.title;
+        document.getElementById('reg-exam-marks').textContent    = examData.questions.length * 10;
 
         let registrationData = {};
         let timerInterval;
         let seconds = 0;
-        let studentName = "Student";
 
-        // Handle Registration
+        // ── Registration Submit ────────────────────────────────────────
         document.getElementById('start-exam-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            
+
             registrationData = {
-                name: document.getElementById('student-name').value,
-                email: document.getElementById('student-email').value,
-                phone: document.getElementById('student-phone').value,
-                empCode: document.getElementById('student-emp-code').value,
-                shedName: document.getElementById('student-shed').value
+                name:     document.getElementById('student-name').value.trim(),
+                email:    document.getElementById('student-email').value.trim(),
+                phone:    document.getElementById('student-phone').value.trim(),
+                empCode:  document.getElementById('student-emp-code').value.trim(),
+                shedName: document.getElementById('student-shed').value.trim()
             };
 
-            studentName = registrationData.name;
-            
-            regSection.style.display = 'none';
-            examSection.style.display = 'block';
+            regSection.style.display  = 'none';
+            examSection.style.display = 'flex';
 
             renderQuestions();
 
-            // Start Timer
             timerInterval = setInterval(() => {
                 seconds++;
                 const m = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -191,84 +608,81 @@
             }, 1000);
         });
 
+        // ── Render Questions ───────────────────────────────────────────
         function renderQuestions() {
             const container = document.getElementById('questions-container');
             examData.questions.forEach((q, index) => {
-                const qDiv = document.createElement('div');
-                qDiv.classList.add('question-card');
-                qDiv.style.marginBottom = '2rem';
+                const card = document.createElement('div');
+                card.classList.add('gf-question-card');
 
-                let optsHtml = '';
+                let optsHtml = '<div class="gf-options">';
                 q.options.forEach((opt, oIndex) => {
                     optsHtml += `
-                        <div class="option" style="cursor: pointer;" onclick="document.getElementById('q${index}_o${oIndex}').click()">
+                        <div class="gf-option" onclick="document.getElementById('q${index}_o${oIndex}').click()">
                             <input type="radio" name="q${index}" id="q${index}_o${oIndex}" value="${oIndex}" required>
-                            <label style="margin:0; cursor: pointer;">${opt}</label>
+                            <label for="q${index}_o${oIndex}">${opt}</label>
                         </div>
                     `;
                 });
+                optsHtml += '</div>';
 
-                qDiv.innerHTML = `
-                    <h3 style="margin-bottom: 1rem;">${index + 1}. ${q.qText}</h3>
-                    <div class="optionsbox">
-                        ${optsHtml}
-                    </div>
+                card.innerHTML = `
+                    <h3>${index + 1}. ${q.qText}</h3>
+                    ${optsHtml}
                 `;
-                container.appendChild(qDiv);
+                container.appendChild(card);
             });
         }
 
-        // Handle Submission
+        // ── Submission ─────────────────────────────────────────────────
         document.getElementById('submission-form').addEventListener('submit', (e) => {
             e.preventDefault();
             clearInterval(timerInterval);
 
-            // Calculate Score
             let correctCount = 0;
+            let attemptedCount = 0;
             examData.questions.forEach((q, index) => {
                 const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                if (selected && parseInt(selected.value) === q.correctAnswer) {
-                    correctCount++;
+                if (selected) {
+                    attemptedCount++;
+                    if (parseInt(selected.value) === q.correctAnswer) correctCount++;
                 }
             });
 
-            const scorePercentage = Math.round((correctCount / examData.questions.length) * 100);
+            const totalQuestions = examData.questions.length;
+            const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
 
-            // 🚀 Send actual result to Google Sheets
             const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwbm7hTa15Z6PT8HSMOKoUjiarsbvQwDcatGZuN8dZq2QiIUotilC40_1O8GLlGAj1Xfw/exec";
 
             const submissionData = {
-                name: registrationData.name,
-                email: registrationData.email,
-                phone: registrationData.phone,
-                empCode: registrationData.empCode,
-                shedName: registrationData.shedName,
-                exam: examData.title,
-                score: `${scorePercentage}%`,
-                status: scorePercentage >= 50 ? 'Pass' : 'Fail',
-                date: new Date().toISOString().split('T')[0]
+                name:               registrationData.name,
+                email:              registrationData.email,
+                phone:              registrationData.phone,
+                empCode:            registrationData.empCode,
+                shedName:           registrationData.shedName,
+                exam:               examData.title,
+                score:              `${scorePercentage}%`,
+                questionsAttempted: attemptedCount,
+                totalQuestions:     totalQuestions,
+                status:             scorePercentage >= 50 ? 'Pass' : 'Fail',
+                date:     new Date().toISOString().split('T')[0]
             };
 
             if (GOOGLE_SHEET_URL.startsWith('http')) {
                 fetch(GOOGLE_SHEET_URL, {
                     method: 'POST',
                     body: JSON.stringify(submissionData)
-                    // No headers sent to avoid tricky CORS preflight blocking
                 }).catch(err => console.error("Could not reach Google Sheets", err));
             } else {
-                // Fallback to local storage if URL isn't set up yet
                 let results = JSON.parse(localStorage.getItem('mock_results') || '[]');
                 results.unshift(submissionData);
                 localStorage.setItem('mock_results', JSON.stringify(results));
             }
 
-            examSection.style.display = 'none';
-            compSection.style.display = 'block';
-
-            // Show Score is removed based on your request!
-            // Just leaving "Successfully Submitted" message.
+            examSection.style.display  = 'none';
+            compSection.style.display  = 'flex';
         });
     </script>
-</body>
 
+</body>
 </html>

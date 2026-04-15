@@ -27,7 +27,7 @@
     <nav class="navbar">
         <div class="logo">
             <span class="logo-icon">⚡</span>
-            <span>Gen<span class="highlight">Exam</span></span>
+            <span>HBL<span class="highlight">Exam Portal</span></span>
         </div>
         <div class="nav-links">
             <a href="#" class="active">Dashboard</a>
@@ -40,7 +40,7 @@
         <!-- Dashboard Header -->
         <header class="page-header">
             <h1>Create a New Exam</h1>
-            <p>Upload your course material (PDF) and let AI generate the perfect exam.</p>
+            <p>Upload a questions PDF to facilitate the automated generation of structured examination papers.</p>
         </header>
 
         <div class="grid-content">
@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Upload Source Material (PDF/Word text)</label>
+                        <label>Upload Questioner (PDF/Word text)</label>
                         <div class="file-drop-zone" id="drop-zone">
                             <div class="upload-icon">📄</div>
                             <p>Drag & drop your file here or <span>browse</span></p>
@@ -65,7 +65,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="question-count">Number of Questions</label>
-                            <input type="number" id="question-count" min="1" max="50" value="10" required>
+                            <input type="number" id="question-count" min="1" max="100" value="10" required>
                         </div>
                         <div class="form-group">
                             <label for="difficulty">Difficulty Level</label>
@@ -94,7 +94,7 @@
                 <div id="preview-content" class="preview-empty">
                     <div class="empty-state">
                         <span class="ghost-icon">🔮</span>
-                        <p>Fill out the form and click generate to see AI magic here.</p>
+                        <p>Fill out the form and click generate to see generated questions here.</p>
                     </div>
                 </div>
 
@@ -112,9 +112,16 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Student Name</th>
-                            <th>Exam Taken</th>
-                            <th>Score</th>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Emp Code</th>
+                            <th>Shed Name</th>
+                            <th>Exam</th>
+                            <th>Marks</th>
+                            <th>Attempted</th>
+                            <th>Total Qs</th>
                             <th>Status</th>
                             <th>Date</th>
                         </tr>
@@ -131,7 +138,7 @@
             <div class="modal-content glass-panel">
                 <span class="close-btn">&times;</span>
                 <h2>Exam Published! 🎉</h2>
-                <p>Share this link with your students. All their answers will be securely directed to your Results
+                <p>Share this link to the respective users. All their answers will be securely directed to your Results
                     board.</p>
                 <div class="share-link-box">
                     <input type="text" id="share-link" readonly value="https://your-domain.com/exam.html?id=12345">
