@@ -122,11 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
       JSON.stringify(currentGeneratedExam),
     );
 
-    // 1. Create the full long URL
-    const encodedData = btoa(
-      unescape(encodeURIComponent(JSON.stringify(currentGeneratedExam))),
-    );
-    const longUrl = `${window.location.origin}/ai-exam-generator/exam.html?id=${fakeId}&data=${encodedData}`;
+    // 1. Create a short, clean URL (data is stored in localStorage)
+    const longUrl = `${window.location.origin}/ai-exam-generator/exam.html?id=${fakeId}`;
 
     // 2. Show loading state in the link box
     shareLink.value = "Shortening link... Please wait.";
